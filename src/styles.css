@@ -25,10 +25,16 @@
     opacity: 1;
 }
 
-#notebookPanel .react-tabs__tab--selected {
-    background: var(--SmartThemeQuoteColor);
-    border-color: var(--SmartThemeBorderColor);
+#notebookPanel .react-tabs__tab {
     color: var(--SmartThemeBodyColor);
+}
+
+#notebookPanel .react-tabs__tab--selected {
+    background: var(--black50a);
+    background: color-mix(in srgb, var(--SmartThemeQuoteColor) 35%, transparent);
+    border-color: var(--SmartThemeQuoteColor);
+    color: var(--SmartThemeBodyColor);
+    font-weight: bold;
 }
 
 #notebookPanel .ql-toolbar.ql-snow .ql-formats {
@@ -162,4 +168,96 @@
 #notebookPanel .ql-editor ol,
 #notebookPanel .ql-editor ul {
     padding-left: 0.5em;
+}
+
+#notebookPanel .nb-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+#notebookPanel .nb-chip {
+    padding: 4px 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: calc(var(--mainFontSize) * 0.9);
+    background: var(--black30a);
+    user-select: none;
+}
+
+#notebookPanel .nb-chip {
+    color: var(--SmartThemeBodyColor);
+}
+
+#notebookPanel .nb-chip.active {
+    background: var(--black50a);
+    background: color-mix(in srgb, var(--SmartThemeQuoteColor) 35%, transparent);
+    border-color: var(--SmartThemeQuoteColor);
+    color: var(--SmartThemeBodyColor);
+    font-weight: bold;
+}
+
+#notebookPanel .nb-group-label {
+    opacity: 0.7;
+    padding: 0 4px;
+}
+
+/* copy button inside the note field */
+#notebookPanel .ql-editor {
+    padding-right: 38px;
+}
+
+#notebookPanel .nb-copy-wrap {
+    position: sticky;
+    top: 4px;
+    height: 0;
+    z-index: 5;
+}
+
+#notebookPanel .nb-copy-btn {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 6px;
+    background: var(--black50a);
+    color: var(--SmartThemeBodyColor);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+    user-select: none;
+}
+
+#notebookPanel .nb-copy-btn:hover {
+    opacity: 1;
+}
+
+/* pin button on group chips */
+#notebookPanel .nb-chip .nb-pin {
+    margin-left: 6px;
+    font-size: 0.8em;
+    opacity: 0.35;
+    transform: rotate(45deg);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+#notebookPanel .nb-chip .nb-pin:hover {
+    opacity: 0.9;
+}
+
+#notebookPanel .nb-chip .nb-pin.pinned {
+    opacity: 1;
+    transform: none;
+    color: var(--SmartThemeQuoteColor);
+}
+
+#notebookPanel .nb-chip.pinned {
+    border-color: var(--SmartThemeQuoteColor);
 }

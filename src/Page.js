@@ -1,23 +1,113 @@
 /* eslint-disable no-restricted-globals */
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { copyText, htmlToText } from './util.js';
+
+// Only link and lists in the toolbar (defined outside the component so it stays referentially stable)
+const QUILL_MODULES = { toolbar: [['link'], [{ list: 'ordered' }, { list: 'bullet' }]] };
 
 /**
  * Component for displaying a page in the notebook.
  * @param {object} props - Component props
  * @param {import('./App').Page} props.page - The page to display
+ * @param {string[]} props.groups - All group names
  * @param {function} props.onChange - The function to call when the page content changes
  * @returns
  */
-export default function Page({ page, onChange }) {
+export default function Page({ page, groups, onChange }) {
+    const quillRef = useRef(null);
+
+    // Floating "copy" button inside the note field itself (stays at the top-right while scrolling)
+    useEffect(() => {
+        const quill = quillRef.current?.getEditor?.();
+        const container = quill?.container;
+        if (!container) return undefined;
+        const wrap = document.createElement('div');
+        wrap.className = 'nb-copy-wrap';
+        const btn = document.createElement('div');
+        btn.className = 'nb-copy-btn';
+        btn.title = 'Копировать заметку';
+        btn.innerHTML = '<i class="fa-solid fa-copy"></i>';
+        // do not steal focus / selection from the editor
+        btn.addEventListener('mousedown', (e) => e.preventDefault());
+        let timer = null;
+        btn.addEventListener('click', () => {
+            copyText(htmlToText(quill.root.innerHTML));
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            clearTimeout(timer);
+            timer = setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i>'; }, 1200);
+        });
+        wrap.appendChild(btn);
+        container.prepend(wrap);
+        return () => { clearTimeout(timer); wrap.remove(); };
+    }, []);
+
+    /**
+     * Turns **bold** and *italic* markers in the editor into real formatting.
+     * @returns {boolean} true if something was converted
+     */
+    function applyMarkdown() {
+        const quill = quillRef.current?.getEditor?.();
+        if (!quill) return false;
+        const rules = [
+            { re: /()\*\*([^*\n]+)\*\*/, fmt: 'bold', mark: 2 },
+            { re: /(^|[^*\w])\*([^*\n]+)\*(?![*\w])/, fmt: 'italic', mark: 1 },
+        ];
+        let changed = false;
+        for (let guard = 0; guard < 200; guard++) {
+            const text = quill.getText();
+            let hit = null;
+            for (const rule of rules) {
+                const m = rule.re.exec(text);
+                if (m) { hit = { rule, m }; break; }
+            }
+            if (!hit) break;
+            const { rule, m } = hit;
+            const start = m.index + m[1].length;
+            const inner = m[2].length;
+            const sel = quill.getSelection();
+            const atEnd = !!sel && sel.length === 0 && sel.index === start + rule.mark * 2 + inner;
+            quill.deleteText(start + rule.mark + inner, rule.mark, 'api');
+            quill.deleteText(start, rule.mark, 'api');
+            quill.formatText(start, inner, rule.fmt, true, 'api');
+            if (atEnd) { quill.setSelection(start + inner, 0, 'api'); quill.format(rule.fmt, false, 'api'); }
+            changed = true;
+        }
+        return changed;
+    }
+
+    const busy = useRef(false);
+    function handleEditorChange(content, delta, source) {
+        if (busy.current) return;
+        if (source === 'user') {
+            busy.current = true;
+            try {
+                if (applyMarkdown()) {
+                    const html = quillRef.current.getEditor().root.innerHTML;
+                    busy.current = false;
+                    onChange({ ...page, content: html });
+                    return;
+                }
+            } finally { busy.current = false; }
+        }
+        onChange({ ...page, content });
+    }
+
     return (
         <div className="flex-container flexFlowColumn">
             <div className="flex-container alignItemsCenter">
-                <input placeholder="Enter a title..." className="text_pole flex1" type="text" value={page.title} onChange={(event) => onChange({ ...page, title: event.target.value })} />
-                <i className="right_menu_button fa-solid fa-trash" onClick={() => confirm('Are you sure?') && onChange(null)}></i>
+                <input placeholder="Название..." className="text_pole flex1" type="text" value={page.title} onChange={(event) => onChange({ ...page, title: event.target.value })} />
+                <i className="right_menu_button fa-solid fa-trash" title="Удалить заметку" onClick={() => confirm('Удалить заметку?') && onChange(null)}></i>
             </div>
-            <ReactQuill placeholder="What's on your mind?" theme="snow" value={page.content} onChange={(content) => onChange({ ...page, content })} scrollingContainer={document.getElementById('notebookPanelHolder')} />
+            <div className="flex-container alignItemsCenter">
+                <span className="nb-group-label"><i className="fa-solid fa-folder"></i></span>
+                <select className="text_pole flex1" value={page.group || ''} onChange={(event) => onChange({ ...page, group: event.target.value })}>
+                    <option value="">Без группы</option>
+                    {groups.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+            </div>
+            <ReactQuill ref={quillRef} placeholder="Пиши здесь..." theme="snow" modules={QUILL_MODULES} value={page.content} onChange={handleEditorChange} scrollingContainer={document.getElementById('notebookPanelHolder')} />
         </div>
     );
 }

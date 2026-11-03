@@ -20,3 +20,10 @@ Powered by [Quill](https://quilljs.com/).
 ### License
 
 AGPLv3
+
+### Fork changes (Notebook Groups)
+- Notes can be organised into groups (chips above the tabs: All / No group / your groups).
+- Copy whole note button, group selector in every note.
+- Uses the same storage key as the original Notebook, so existing notes carry over.
+- Copy button now lives inside the note field (top-right corner, stays visible while scrolling).
+- Groups can be pinned with the thumbtack on a group chip: pinned groups are shown first and highlighted (stored in `extensionSettings.notebook.pinnedGroups`).
