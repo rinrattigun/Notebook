@@ -1,11 +1,11 @@
 {
-    "display_name": "Notebook (Groups)",
-    "loading_order": 100,
-    "requires": [],
-    "optional": [],
-    "js": "dist/index.js",
-    "css": "",
-    "author": "Cohee1207 (fork: groups)",
-    "version": "1.2.0",
-    "auto_update": false
+  "display_name": "Notebook — Moon",
+  "loading_order": 100,
+  "requires": [],
+  "optional": [],
+  "js": "dist/index.js",
+  "css": "moon.css",
+  "author": "Notebook custom redesign (based on original Notebook Groups)",
+  "version": "2.0.0",
+  "auto_update": false
 }
