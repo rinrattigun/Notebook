@@ -2,3 +2,83 @@
 @media(max-width:600px){#notebookMoonRoot{padding:0;align-items:stretch}#notebookMoonRoot .nbm-shell{height:100dvh;width:100%;border:0}#notebookMoonRoot .nbm-header{height:185px;padding-top:35px}#notebookMoonRoot .nbm-header h1{font-size:66px}#notebookMoonRoot .nbm-main{padding:0 16px}#notebookMoonRoot .nbm-folders{gap:10px}#notebookMoonRoot .nbm-frame{height:79px;font-size:clamp(16px,5vw,25px);box-shadow:3px 3px 0 var(--nbm-ink);padding:3px}#notebookMoonRoot .nbm-count{font-size:13px}#notebookMoonRoot .nbm-divider b{font-size:19px;letter-spacing:2px}#notebookMoonRoot .nbm-section-top h2{font-size:34px}#notebookMoonRoot .nbm-note-open{font-size:24px}#notebookMoonRoot .nbm-editor{padding:18px 14px 85px}#notebookMoonRoot .nbm-editor-head{align-items:flex-start}#notebookMoonRoot .nbm-editor-actions{justify-content:flex-start}#notebookMoonRoot .nbm-editor-head button{font-size:12px;padding:8px}#notebookMoonRoot .nbm-edit-title{font-size:36px;margin-top:30px}#notebookMoonRoot .nbm-edit-body{font-size:19px;min-height:45vh}#notebookMoonRoot .nbm-settings-button{bottom:max(14px,env(safe-area-inset-bottom));right:15px}#notebookMoonRoot .nbm-close{font-size:30px}}
 
 #notebookMoonRoot .nbm-shell.nbm-editing .nbm-content{visibility:hidden}#notebookMoonRoot .nbm-shell.nbm-editing .nbm-editor{background:transparent}#notebookMoonRoot .nbm-shell.nbm-editing .nbm-wallpaper{z-index:0}
+
+/* v2.0.1: Keep note controls visible when the editor scrolls or the mobile keyboard opens. */
+#notebookMoonRoot .nbm-editor{overscroll-behavior:contain;scroll-padding-top:90px;}
+#notebookMoonRoot .nbm-editor-head{position:sticky;top:-25px;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0 12px;margin-top:-14px;background:var(--nbm-bg);border-bottom:1px solid color-mix(in srgb,var(--nbm-stroke) 30%,transparent);isolation:isolate;}
+#notebookMoonRoot .nbm-editor-head::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--nbm-bg);opacity:.94;}
+#notebookMoonRoot .nbm-editor-head button{position:relative;flex-shrink:0;white-space:nowrap;min-height:36px;}
+#notebookMoonRoot .nbm-editor-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+#notebookMoonRoot .nbm-edit-title{display:block;}
+@media(max-width:600px){
+ #notebookMoonRoot .nbm-editor-head{top:-18px;display:grid;grid-template-columns:1fr;gap:9px;padding:12px 0;margin-top:-12px;}
+ #notebookMoonRoot .nbm-editor-head>[data-act=back]{justify-self:start;}
+ #notebookMoonRoot .nbm-editor-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%;}
+ #notebookMoonRoot .nbm-editor-actions button{min-width:0;width:100%;font-size:13px;padding:9px 4px;}
+ #notebookMoonRoot .nbm-edit-title{margin-top:20px;}
+}
+
+/* v2.0.2: editor header is a non-scrolling flex row, not sticky.
+   Explicit controls avoid inherited SillyTavern button/visibility rules. */
+#notebookMoonRoot .nbm-editor:not([hidden]){display:flex!important;flex-direction:column!important;overflow:hidden!important;padding:0!important;isolation:isolate;}
+#notebookMoonRoot .nbm-editor-head{position:relative!important;top:auto!important;left:auto!important;right:auto!important;flex:0 0 auto!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;visibility:visible!important;opacity:1!important;min-height:64px!important;padding:12px 22px!important;margin:0!important;background:var(--nbm-bg)!important;z-index:30!important;border-bottom:1px solid var(--nbm-stroke)!important;isolation:auto!important;}
+#notebookMoonRoot .nbm-editor-head::before{display:none!important;}
+#notebookMoonRoot .nbm-editor-head button{display:inline-flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;opacity:1!important;color:var(--nbm-cream)!important;background:#ffffff18!important;border:1px solid var(--nbm-stroke)!important;min-height:38px!important;line-height:1.2!important;font:14px Georgia,serif!important;padding:9px 12px!important;position:relative!important;z-index:31!important;}
+#notebookMoonRoot .nbm-editor-actions{display:flex!important;flex-wrap:wrap!important;gap:7px!important;visibility:visible!important;opacity:1!important;}
+#notebookMoonRoot .nbm-editor-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:22px 35px 75px;scrollbar-width:thin;}
+#notebookMoonRoot .nbm-editor-scroll .nbm-edit-title{margin:10px 0 18px!important;}
+@media(max-width:600px){#notebookMoonRoot .nbm-editor-head{padding:10px 12px!important;gap:8px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;}#notebookMoonRoot .nbm-editor-head>[data-act=back]{align-self:flex-start!important;}#notebookMoonRoot .nbm-editor-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;}#notebookMoonRoot .nbm-editor-actions button{min-width:0!important;width:100%!important;font-size:12px!important;padding:8px 4px!important;}#notebookMoonRoot .nbm-editor-scroll{padding:16px 14px 90px;}}
+
+/* v2.0.3: independent, always visible toolbar; not a sticky child of editor. */
+#notebookMoonRoot .nbm-editor-head{display:none!important}
+#notebookMoonRoot .nbm-safe-toolbar[hidden]{display:none!important}
+#notebookMoonRoot .nbm-safe-toolbar{
+ position:absolute!important;top:0!important;left:0!important;right:0!important;
+ z-index:1000!important;display:flex!important;flex-wrap:wrap!important;
+ gap:7px!important;align-content:center!important;align-items:center!important;
+ padding:12px 18px!important;min-height:65px!important;
+ background:transparent!important;
+ border:0!important;
+ box-shadow:none!important;pointer-events:none!important;
+ visibility:visible!important;opacity:1!important;
+}
+#notebookMoonRoot .nbm-safe-toolbar button{
+ all:revert!important;pointer-events:auto!important;box-sizing:border-box!important;display:inline-flex!important;
+ align-items:center!important;justify-content:center!important;
+ position:static!important;visibility:visible!important;opacity:1!important;
+ min-height:38px!important;padding:8px 11px!important;margin:0!important;
+ background:transparent!important;color:#f7edc5!important;
+ border:1px solid #d5e3ff!important;border-radius:2px!important;
+ font:14px/1.2 Georgia,serif!important;text-decoration:none!important;
+ text-shadow:none!important;cursor:pointer!important;white-space:nowrap!important;
+}
+#notebookMoonRoot .nbm-editor-scroll{padding-top:82px!important}
+@media(max-width:600px){
+ #notebookMoonRoot .nbm-safe-toolbar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;padding:9px 10px!important}
+ #notebookMoonRoot .nbm-safe-toolbar button{width:100%!important;min-width:0!important;font-size:12px!important;padding:8px 3px!important;white-space:normal!important}
+ #notebookMoonRoot .nbm-editor-scroll{padding-top:125px!important}
+}
+
+
+/* v2.0.6: mobile layout fixes + adjustable folder / title size. */
+#notebookMoonRoot .nbm-close{float:none;display:block;width:44px;height:44px;margin:12px 15px -56px auto;padding:0;line-height:1}
+#notebookMoonRoot .nbm-header{height:auto;min-height:0;padding-bottom:6px;width:100%}
+#notebookMoonRoot .nbm-header h1{font-size:calc(clamp(64px,10vw,92px)*var(--nbm-title-scale,1))}
+#notebookMoonRoot .nbm-frame{height:calc(105px*var(--nbm-folder-scale,1));font-size:calc(33px*var(--nbm-folder-scale,1));overflow-wrap:anywhere;line-height:1.1}
+#notebookMoonRoot .nbm-count{font-size:calc(18px*var(--nbm-folder-scale,1))}
+#notebookMoonRoot .nbm-section-top h2{flex:1 1 auto;min-width:0;overflow-wrap:break-word;word-break:normal}
+#notebookMoonRoot .nbm-actions{flex:0 0 auto}
+@media(max-width:600px){
+ #notebookMoonRoot .nbm-header{height:auto;padding-top:30px;padding-bottom:4px}
+ #notebookMoonRoot .nbm-header h1{font-size:calc(66px*var(--nbm-title-scale,1))}
+ #notebookMoonRoot .nbm-frame{height:calc(79px*var(--nbm-folder-scale,1));font-size:calc(clamp(16px,5vw,25px)*var(--nbm-folder-scale,1))}
+ #notebookMoonRoot .nbm-count{font-size:calc(13px*var(--nbm-folder-scale,1))}
+ #notebookMoonRoot .nbm-section-top{gap:8px}
+ #notebookMoonRoot .nbm-section-top h2{font-size:clamp(22px,7.5vw,30px)}
+ #notebookMoonRoot .nbm-actions{gap:5px}
+ #notebookMoonRoot .nbm-actions button{min-width:0;width:40px;height:36px;padding:0;font-size:20px;line-height:1}
+ #notebookMoonRoot .nbm-spark-left{left:calc(50% - 150px)}
+ #notebookMoonRoot .nbm-spark-right{right:calc(50% - 150px)}
+}
+#notebookMoonRoot .nbm-new-folder{flex:0 0 auto;overflow:visible}
+@media(max-width:600px){#notebookMoonRoot .nbm-new-folder{font-size:17px;padding:8px 10px}#notebookMoonRoot .nbm-folders-top{gap:8px}}
